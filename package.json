@@ -1,6 +1,6 @@
 {
   "name": "grunt-mocha-nyc",
-  "version": "0.0.2",
+  "version": "1.0.2",
   "description": "Almost config-free nyc code coverage reporter for Mocha usage in Grunt",
   "peerDependencies": {
     "grunt": ">=0.4.0"
