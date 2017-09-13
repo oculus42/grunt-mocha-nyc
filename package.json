@@ -1,34 +1,31 @@
 {
-  "name"            : "grunt-mocha-istanbul",
-  "version"         : "5.0.2",
-  "description"     : "Almost config-free Istanbul code coverage reporter for Mocha usage in Grunt",
+  "name": "grunt-mocha-nyc",
+  "version": "0.0.2",
+  "description": "Almost config-free nyc code coverage reporter for Mocha usage in Grunt",
   "peerDependencies": {
     "grunt": ">=0.4.0"
   },
   "devDependencies": {
     "grunt": "^1.0.1",
-    "mocha": "^3.0.1",
-    "istanbul": "1.1.0-alpha.1",
-    "babel-cli": "^6.9.0",
-    "babel-preset-es2015": "^6.13.0",
-    "isparta": "^4.0.0"
+    "mocha": "^3.5.3",
+    "nyc": "^11.2.1"
   },
-  "repository"      : {
+  "repository": {
     "type": "git",
-    "url" : "git://github.com/pocesar/grunt-mocha-istanbul.git"
+    "url": "git@github.com:davidNHK/grunt-mocha-nyc.git"
   },
   "scripts": {
     "test": "grunt"
   },
-  "keywords"        : [
+  "keywords": [
     "grunt",
     "gruntplugin",
     "mocha",
-    "istanbul",
+    "nyc",
     "test",
     "coverage",
     "coveralls"
   ],
-  "main"            : "tasks/index.js",
-  "license"         : "MIT"
+  "main": "tasks/index.js",
+  "license": "MIT"
 }

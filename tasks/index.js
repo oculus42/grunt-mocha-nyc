@@ -11,11 +11,11 @@ module.exports = function (grunt) {
         }
     }
 
-    function getIstanbulPath() {
+    function getNYCPath() {
         try {
-            return require.resolve('istanbul/lib/cli');
+            return require.resolve('nyc/bin/nyc.js');
         } catch (ignored) {
-            grunt.fail.fatal('Istanbul peer dependency missing.  Please "npm install istanbul"');
+            grunt.fail.fatal('nyc peer dependency missing.  Please "npm install nyc"');
         }
     }
 
@@ -98,8 +98,9 @@ module.exports = function (grunt) {
             args.push(coverageFolder + '/coverage*.json');
 
             grunt.verbose.ok('Will execute: ', options.nodeExec + ' ' + args.join(' '));
+            console.log(options.nodeExec + ' ' + args.join(' '));
 
-            if (!options.dryRun) {
+          if (!options.dryRun) {
                 grunt.util.spawn({
                     cmd: options.nodeExec,
                     args: args,
@@ -126,13 +127,13 @@ module.exports = function (grunt) {
         callback && callback();
     }
 
-    grunt.registerMultiTask('istanbul_check_coverage', 'Solo task for checking coverage over different or many files.', function () {
+    grunt.registerMultiTask('nyc_check_coverage', 'Solo task for checking coverage over different or many files.', function () {
         var done = this.async();
         var options = this.options(defaultOptions());
 
         // only execute this function if no scriptPath is specified
         if (!options.scriptPath) {
-            options.scriptPath = getIstanbulPath();
+            options.scriptPath = getNYCPath();
         }
 
         executeCheck(function (err, result) {
@@ -149,7 +150,7 @@ module.exports = function (grunt) {
         }, options.coverageFolder, options);
     });
 
-    grunt.registerMultiTask('mocha_istanbul', 'Generate coverage report with Istanbul from mocha test', function () {
+    grunt.registerMultiTask('mocha_nyc', 'Generate coverage report with Istanbul from mocha test', function () {
         if (!this.filesSrc.length) {
             grunt.log.error('No test files to run');
             return;
@@ -172,16 +173,23 @@ module.exports = function (grunt) {
         }
 
         if (!options.scriptPath) {
-            options.scriptPath = getIstanbulPath();
-        }
-
-        if (options.harmony) {
-            args.push('--harmony');
+            options.scriptPath = getNYCPath();
         }
 
         args.push(options.scriptPath);        // ie. node ./node_modules/istanbul/lib/cli.js or another script name
-        args.push('cover');                   // node <scriptPath> cover
 
+        if (options.root) {
+            args.push('--cwd');
+            args.push(options.root);
+        }
+
+      if (options.nycOptions) {
+        arrayOfStrings(options.nycOptions, 'options.nycOptions', function(options){
+          options.forEach(function (opt) {
+            args.push(opt);
+          });
+        })
+      }
 
         if (options.excludes) {
             arrayOfStrings(options.excludes, 'options.excludes', function(options){
@@ -195,35 +203,29 @@ module.exports = function (grunt) {
         if (options.includes) {
             arrayOfStrings(options.includes, 'options.includes', function(options){
                 options.forEach(function (included) {
-                    args.push('-i');
+                    args.push('-n');
                     args.push(included);
                 });
             })
         }
 
-        args.push('--dir', coverageFolder); // node ./node_modules/istanbul/cli.js --dir=coverage
+        args.push('--report-dir', coverageFolder); // node ./node_modules/istanbul/cli.js --dir=coverage
 
         if (options.root) {
-            args.push('--root', rootFolderForCoverage);
+          args.push('--cwd', options.root);
         }
-        if (options.print) {
-            args.push('--print', options.print);
-        }
+        // if (options.print) {
+        //     args.push('--print', options.print);
+        // }
 
         options.reportFormats.forEach(function (format) {
-            args.push('--report', format);
+            args.push('-r', format);
         });
 
-        if (options.istanbulOptions) {
-            arrayOfStrings(options.istanbulOptions, 'options.istanbulOptions', function(options){
-                options.forEach(function (opt) {
-                    args.push(opt);
-                });
-            })
-        }
+
 
         args.push(mochaPath);                 // node ./node_modules/istanbul/lib/cli.js cover ./node_modules/mocha/bin/_mocha
-        args.push('--');                      // node ./node_modules/istanbul/lib/cli.js cover ./node_modules/mocha/bin/_mocha --
+        // args.push('--');                      // node ./node_modules/istanbul/lib/cli.js cover ./node_modules/mocha/bin/_mocha --
 
         if (grunt.file.exists(options.cwd, testsDir, 'mocha.opts')) {
             if (
@@ -256,6 +258,7 @@ module.exports = function (grunt) {
                 });
             });
         }
+
 
         if (options.ui) {
             args.push('--ui');
@@ -310,8 +313,9 @@ module.exports = function (grunt) {
         args = args.concat(masked);
 
         grunt.verbose.ok('Will execute:', options.nodeExec + ' ' + args.join(' '));
+        console.log(options.nodeExec + ' ' + args.join(' '));
 
-        if (!options.dryRun) {
+      if (!options.dryRun) {
             grunt.util.spawn({
                 cmd: options.nodeExec,
                 args: args,
