@@ -98,7 +98,6 @@ module.exports = function (grunt) {
             args.push(coverageFolder + '/coverage*.json');
 
             grunt.verbose.ok('Will execute: ', options.nodeExec + ' ' + args.join(' '));
-            console.log(options.nodeExec + ' ' + args.join(' '));
 
           if (!options.dryRun) {
                 grunt.util.spawn({
@@ -313,7 +312,6 @@ module.exports = function (grunt) {
         args = args.concat(masked);
 
         grunt.verbose.ok('Will execute:', options.nodeExec + ' ' + args.join(' '));
-        console.log(options.nodeExec + ' ' + args.join(' '));
 
       if (!options.dryRun) {
             grunt.util.spawn({
